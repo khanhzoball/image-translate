@@ -57,14 +57,14 @@ def index():
 def hi():
     return "hi"
 
-@app.route('/image_translate', methods=["POST"])
+@app.route('/image-translate', methods=["POST"])
 def image_translate():
     data = json.loads(request.data.decode("utf-8") )
     content = convert_to_image(data)
 
     data_uri = detect_text(content)
 
-    return jsonify({"new_img": data_uri})
+    return "hi"
 
 if __name__ == "__main__":
     app.run(debug=True)
