@@ -20,6 +20,8 @@ const Home = () => {
                 let canvas = document.getElementById("result-image");
                 let img = new Image()
 
+                console.log(resJson)
+
                 document.getElementById("result-image").src = resJson["new_img"];
             })
         }
