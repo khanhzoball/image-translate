@@ -9,7 +9,7 @@ const Home = () => {
         reader.onloadend = function() {
             const data_uri = reader.result
 
-            fetch("/image_translate", {
+            fetch("/imagetranslate", {
                 method: "POST",
                 body: JSON.stringify({
                     'data_uri': data_uri,
