@@ -60,9 +60,9 @@ def index():
 def image_translate():
     data = json.loads(request.data.decode("utf-8"))
 
-    return jsonify({"new_img": data})
+    content = convert_to_image(data)
 
-    # content = convert_to_image(data)
+    return jsonify({"new_img": content})
 
     # data_uri = detect_text(content)
 
