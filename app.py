@@ -1,6 +1,5 @@
 from flask import Flask, jsonify, request
 from base64 import b64decode, b64encode
-from google.cloud import vision
 import cv2
 import numpy as np
 import os
