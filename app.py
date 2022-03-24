@@ -1,5 +1,8 @@
 from flask import Flask, jsonify, request
+from base64 import b64decode, b64encode
+from google.cloud import vision
 import numpy as np
+import os
 
 app = Flask(__name__, static_folder='build/', static_url_path='/')
 
