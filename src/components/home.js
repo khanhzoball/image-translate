@@ -36,10 +36,13 @@ const Home = () => {
                     Vision
                 </div>
                 <div>
-                    <img src="" id="result-image" class="image"/>
+                    <img src="" id="result-image" className="image"/>
                 </div>
                 <div>
-                    <input type="file" accept="image/png, image/jpg" onChange={(e) => {
+                    <label for="img-upload" className="upload">
+                        Upload image
+                    </label>
+                    <input id="img-upload" type="file" accept="image/png, image/jpg, image/jpeg" onChange={(e) => {
                         LOG_IMG(e.target.files)
                     }}/>
                 </div>

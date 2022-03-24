@@ -41,7 +41,7 @@ def detect_text(content):
         cv2.line(img, (vertices[2].x,vertices[2].y), (vertices[3].x,vertices[3].y), (255,0,0), 2)
         cv2.line(img, (vertices[3].x,vertices[3].y), (vertices[0].x,vertices[0].y), (255,0,0), 2)
     
-    cv2.imwrite('savedImage.jpg', img)
+    # cv2.imwrite('savedImage.jpg', img)
 
     encoded = cv2.imencode('.jpg', img)[1]
     encoded_bytes = encoded.tobytes()
