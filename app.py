@@ -53,6 +53,10 @@ def detect_text(content):
 def index():
     return app.send_static_file('index.html')
 
+@app.route('/hi')
+def hi():
+    return "hi"
+    
 @app.route('/api/image_translate', methods=["POST"])
 def image_translate():
     data = json.loads(request.data.decode("utf-8") )
