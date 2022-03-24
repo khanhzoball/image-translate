@@ -1,0 +1,29 @@
+body, html {
+    justify-content: center;
+    align-items: center;
+    background-color: #6715A2;
+    margin: 0;
+}
+
+.title {
+    font-size: 12rem;
+    padding-top: 2rem;
+    color: black;
+}
+
+.container{
+    width: 695px;
+    margin-left: auto;
+    margin-right: auto;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.image {
+    height: auto; 
+    width: auto; 
+    max-width: 400px; 
+}
