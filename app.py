@@ -48,7 +48,7 @@ def detect_text(content):
     
     data_uri = "data:image/jpg;base64," + b64encode(encoded_bytes).decode("utf-8")
 
-    return data_uri
+    return texts[0].description
 
 
 ###############################################################################
@@ -59,14 +59,11 @@ def index():
 @app.route('/imagetranslate', methods=["POST"])
 def image_translate():
     data = json.loads(request.data.decode("utf-8"))
-
     content = convert_to_image(data)
 
-    return jsonify({"new_img": content})
+    data_uri = detect_text(content)
 
-    # data_uri = detect_text(content)
-
-    # return jsonify({"new_img": data_uri})
+    return jsonify({"new_img": data_uri})
 
 if __name__ == "__main__":
     app.run(debug=True)
