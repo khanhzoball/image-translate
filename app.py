@@ -4,6 +4,7 @@ from google.cloud import vision
 import cv2
 import numpy as np
 import os
+import json
 
 app = Flask(__name__, static_folder='build/', static_url_path='/')
 
@@ -55,9 +56,14 @@ def detect_text(content):
 def index():
     return app.send_static_file('index.html')
 
-@app.route('/hi')
-def hi():
-    return "hi"
+@app.route('/api/image_translate', methods=["POST"])
+def image_translate():
+    data = json.loads(request.data.decode("utf-8") )
+    content = convert_to_image(data)
+
+    data_uri = detect_text(content)
+
+    return jsonify({"new_img": data_uri})
 
 if __name__ == "__main__":
     app.run(debug=True)
