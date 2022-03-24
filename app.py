@@ -22,7 +22,7 @@ def detect_text(content):
     os.environ["GOOGLE_APPLICATION_CREDENTIALS"]="bold-mantis-345007-342bdcff7445.json"
 
     print(os.environ["GOOGLE_APPLICATION_CREDENTIALS"])
-    return 2
+    return os.environ["GOOGLE_APPLICATION_CREDENTIALS"]
     # client = vision.ImageAnnotatorClient()
     
     # image = vision.Image(content=content)
