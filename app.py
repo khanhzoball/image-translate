@@ -1,5 +1,4 @@
 from flask import Flask, jsonify, request
-import cv2
 import numpy as np
 
 app = Flask(__name__, static_folder='build/', static_url_path='/')
