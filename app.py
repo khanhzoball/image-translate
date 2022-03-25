@@ -118,26 +118,26 @@ def detect_text(content):
     print("FINISHED GOOGLE VISION DETECTION")
     sys.stdout.flush()
 
-    texts_lang = detect_language(texts)
+    # texts_lang = detect_language(texts)
 
     nparr = np.frombuffer(content, np.uint8)
     img = cv2.imdecode(nparr, flags=cv2.IMREAD_COLOR)
 
     for text in texts:
         colors = ()
-        language = texts_lang[text.description]
+        # language = texts_lang[text.description]
 
-        if language in lang_colors:
-            color = lang_colors[language]
-        else:
-            color = (0, 0, 0)
+        # if language in lang_colors:
+            # color = lang_colors[language]
+        # else:
+            # color = (0, 0, 0)
 
 
         vertices = text.bounding_poly.vertices
-        cv2.line(img, (vertices[0].x,vertices[0].y), (vertices[1].x,vertices[1].y), color, 2)
-        cv2.line(img, (vertices[1].x,vertices[1].y), (vertices[2].x,vertices[2].y), color, 2)
-        cv2.line(img, (vertices[2].x,vertices[2].y), (vertices[3].x,vertices[3].y), color, 2)
-        cv2.line(img, (vertices[3].x,vertices[3].y), (vertices[0].x,vertices[0].y), color, 2)
+        cv2.line(img, (vertices[0].x,vertices[0].y), (vertices[1].x,vertices[1].y), (255, 0, 0), 2)
+        cv2.line(img, (vertices[1].x,vertices[1].y), (vertices[2].x,vertices[2].y), (255, 0, 0), 2)
+        cv2.line(img, (vertices[2].x,vertices[2].y), (vertices[3].x,vertices[3].y), (255, 0, 0), 2)
+        cv2.line(img, (vertices[3].x,vertices[3].y), (vertices[0].x,vertices[0].y), (255, 0, 0), 2)
         print("DRAWING LINE")
         sys.stdout.flush()
     cv2.imwrite('savedImage.jpg', img)
