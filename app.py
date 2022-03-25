@@ -1,5 +1,6 @@
 from flask import Flask, jsonify, request
 from base64 import b64decode, b64encode
+from requests import post
 from google.cloud import vision
 import cv2
 import numpy as np
@@ -17,6 +18,18 @@ def convert_to_image(data):
     content = b64decode(encoded)
 
     return content
+
+def translate(texts):
+    for text in texts:
+        description = text.description
+        lang_response = post("https://openapi.naver.com/v1/papago/detectLangs",
+               headers = {
+                   "X-Naver-Client-Id": "jsd1QcWigK5Hs7EEgkGR",
+                   "X-Naver-Client-Secret": "lUM8KuEda1"
+               },
+               data={
+                   "query": description
+                }).json()
 
 def detect_text(content):
     os.environ["GOOGLE_APPLICATION_CREDENTIALS"]="google-credentials.json"

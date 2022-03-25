@@ -42,7 +42,7 @@ const Home = () => {
                     <label for="img-upload" className="upload">
                         Upload image
                     </label>
-                    <input id="img-upload" type="file" accept="image/png, image/jpg, image/jpeg" onChange={(e) => {
+                    <input id="img-upload" type="file" accept="image/*" onChange={(e) => {
                         LOG_IMG(e.target.files)
                     }}/>
                 </div>
