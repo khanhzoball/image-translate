@@ -9,6 +9,7 @@ import os
 import json
 from dotenv import load_dotenv
 import detectlanguage
+import sys
 
 load_dotenv()
 
@@ -29,7 +30,24 @@ def convert_to_image(data):
     ## This is to handle the iphone images
     nparr = np.frombuffer(content, np.uint8)
     img = cv2.imdecode(nparr, flags=cv2.IMREAD_COLOR)
-    content = cv2.imencode('.jpg', img)[1]
+
+
+    scale = 3686400/(img.shape[0] * img.shape[1])
+
+    if (scale < 1):
+        #calculate the 50 percent of original dimensions
+        width = int(img.shape[1] * scale)
+        height = int(img.shape[0] * scale)
+
+        # dsize
+        dsize = (width, height)
+
+        # resize image
+        output = cv2.resize(img, dsize)
+
+        content = cv2.imencode('.jpg', output)[1]
+    else:
+        content = cv2.imencode('.jpg', img)[1]
     content = content.tobytes()
 
     return content
@@ -60,10 +78,11 @@ def detect_language(texts):
         description = text.description
         response = detectlanguage.detect(description)
         if len(response) > 0:
-            texts_lang[text.description] = response[0]['language']
+            texts_lang[description] = response[0]['language']
         else:
-            texts_lang[text.description] = "unk"
-        # print(texts_lang[text.description])
+            texts_lang[description] = "unk"
+        print(texts_lang[description])
+        sys.stdout.flush()
     
     return texts_lang
 
@@ -96,7 +115,8 @@ def detect_text(content):
     
     texts = response.text_annotations
 
-    # print("FINISHED GOOGLE VISION DETECTION")
+    print("FINISHED GOOGLE VISION DETECTION")
+    sys.stdout.flush()
 
     texts_lang = detect_language(texts)
 
@@ -118,8 +138,9 @@ def detect_text(content):
         cv2.line(img, (vertices[1].x,vertices[1].y), (vertices[2].x,vertices[2].y), color, 2)
         cv2.line(img, (vertices[2].x,vertices[2].y), (vertices[3].x,vertices[3].y), color, 2)
         cv2.line(img, (vertices[3].x,vertices[3].y), (vertices[0].x,vertices[0].y), color, 2)
-        # print("DRAWING LINE")
-    # cv2.imwrite('savedImage.jpg', img)
+        print("DRAWING LINE")
+        sys.stdout.flush()
+    cv2.imwrite('savedImage.jpg', img)
 
     encoded = cv2.imencode('.jpg', img)[1]
     encoded_bytes = encoded.tobytes()
@@ -140,10 +161,12 @@ def image_translate():
 
     data = json.loads(request.data.decode("utf-8"))
     content = convert_to_image(data)
-    #print("FINISHED CONVERTING DATA URI TO IMAGE")
+    print("FINISHED CONVERTING DATA URI TO IMAGE")
+    sys.stdout.flush()
 
     data_uri = detect_text(content)
-    #print("FINISHED CREATING IMG")
+    print("FINISHED CREATING IMG")
+    sys.stdout.flush()
 
     return jsonify({"new_img": data_uri})
 
