@@ -17,6 +17,15 @@ def convert_to_image(data):
     header, encoded = data_uri.split(",", 1)
     content = b64decode(encoded)
 
+
+    ## Converts the buffer to an array then to a cv2 img
+    ## Encode the cv2 image back to np arrary then to buffer
+    ## This is to handle the iphone images
+    nparr = np.frombuffer(content, np.uint8)
+    img = cv2.imdecode(nparr, flags=cv2.IMREAD_COLOR)
+    content = cv2.imencode('.jpg', img)[1]
+    content = content.tobytes()
+
     return content
 
 def translate(texts):
