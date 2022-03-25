@@ -8,6 +8,7 @@ import numpy as np
 import os
 import json
 from dotenv import load_dotenv
+import detectlanguage
 
 load_dotenv()
 
@@ -40,18 +41,29 @@ def translate(texts):
 def detect_language(texts):
     texts_lang = {}
 
+    # for text in texts:
+    #     description = text.description
+    #     response = post("https://openapi.naver.com/v1/papago/detectLangs",
+    #         headers = {
+    #             "X-Naver-Client-Id": os.getenv("NAVER_CLIENT_ID"),
+    #             "X-Naver-Client-Secret": os.getenv("NAVER_CLIENT_SECRET")
+    #             },
+    #         data={
+    #             "query": description
+    #         }).json()
+    #     print(response)
+    #     texts_lang[text.description] = response['langCode']
+
+    detectlanguage.configuration.api_key = "478af81c74a80fd8caae1d074019e7c8"
+
     for text in texts:
         description = text.description
-        response = post("https://openapi.naver.com/v1/papago/detectLangs",
-            headers = {
-                "X-Naver-Client-Id": os.getenv("NAVER_CLIENT_ID"),
-                "X-Naver-Client-Secret": os.getenv("NAVER_CLIENT_SECRET")
-                },
-            data={
-                "query": description
-            }).json()
-        print(response)
-        texts_lang[text.description] = response['langCode']
+        response = detectlanguage.detect(description)
+        if len(response) > 0:
+            texts_lang[text.description] = response[0]['language']
+        else:
+            texts_lang[text.description] = "unk"
+        # print(texts_lang[text.description])
     
     return texts_lang
 
@@ -84,6 +96,8 @@ def detect_text(content):
     
     texts = response.text_annotations
 
+    # print("FINISHED GOOGLE VISION DETECTION")
+
     texts_lang = detect_language(texts)
 
     nparr = np.frombuffer(content, np.uint8)
@@ -104,7 +118,7 @@ def detect_text(content):
         cv2.line(img, (vertices[1].x,vertices[1].y), (vertices[2].x,vertices[2].y), color, 2)
         cv2.line(img, (vertices[2].x,vertices[2].y), (vertices[3].x,vertices[3].y), color, 2)
         cv2.line(img, (vertices[3].x,vertices[3].y), (vertices[0].x,vertices[0].y), color, 2)
-    
+        # print("DRAWING LINE")
     # cv2.imwrite('savedImage.jpg', img)
 
     encoded = cv2.imencode('.jpg', img)[1]
@@ -122,10 +136,14 @@ def index():
 
 @app.route('/imagetranslate', methods=["POST"])
 def image_translate():
+    print("RECEIVED DATA URI FROM FRONT END")
+
     data = json.loads(request.data.decode("utf-8"))
     content = convert_to_image(data)
+    #print("FINISHED CONVERTING DATA URI TO IMAGE")
 
     data_uri = detect_text(content)
+    #print("FINISHED CREATING IMG")
 
     return jsonify({"new_img": data_uri})
 
