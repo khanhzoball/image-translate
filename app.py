@@ -1,3 +1,4 @@
+from urllib import response
 from flask import Flask, jsonify, request
 from base64 import b64decode, b64encode
 from requests import post
@@ -6,6 +7,10 @@ import cv2
 import numpy as np
 import os
 import json
+from dotenv import load_dotenv
+
+load_dotenv()
+
 
 app = Flask(__name__, static_folder='build/', static_url_path='/')
 
@@ -30,18 +35,44 @@ def convert_to_image(data):
 
 def translate(texts):
     for text in texts:
+        0
+
+def detect_language(texts):
+    texts_lang = {}
+
+    for text in texts:
         description = text.description
-        lang_response = post("https://openapi.naver.com/v1/papago/detectLangs",
-               headers = {
-                   "X-Naver-Client-Id": "jsd1QcWigK5Hs7EEgkGR",
-                   "X-Naver-Client-Secret": "lUM8KuEda1"
-               },
-               data={
-                   "query": description
-                }).json()
+        response = post("https://openapi.naver.com/v1/papago/detectLangs",
+            headers = {
+                "X-Naver-Client-Id": os.getenv("NAVER_CLIENT_ID"),
+                "X-Naver-Client-Secret": os.getenv("NAVER_CLIENT_SECRET")
+                },
+            data={
+                "query": description
+            }).json()
+        print(response)
+        texts_lang[text.description] = response['langCode']
+    
+    return texts_lang
 
 def detect_text(content):
     os.environ["GOOGLE_APPLICATION_CREDENTIALS"]="google-credentials.json"
+
+    lang_colors = {
+        "en": (255, 255, 255),
+        "ko": (0, 255, 255),
+        "ja": (255,0,0),
+        "zh-CN": (102, 102, 255),
+        "zh-TW": (102, 102, 255),
+        "vi": (153, 51, 255),
+        "id": (255, 255, 153),
+        "th": (0, 255, 128),
+        "de": (255, 204, 229),
+        "ru": (0, 51, 102),
+        "es": (102, 178, 255),
+        "it": (153, 153, 0),
+        "fr": (76, 0, 153)
+    }
 
     client = vision.ImageAnnotatorClient()
     
@@ -53,15 +84,26 @@ def detect_text(content):
     
     texts = response.text_annotations
 
+    texts_lang = detect_language(texts)
+
     nparr = np.frombuffer(content, np.uint8)
     img = cv2.imdecode(nparr, flags=cv2.IMREAD_COLOR)
 
     for text in texts:
+        colors = ()
+        language = texts_lang[text.description]
+
+        if language in lang_colors:
+            color = lang_colors[language]
+        else:
+            color = (0, 0, 0)
+
+
         vertices = text.bounding_poly.vertices
-        cv2.line(img, (vertices[0].x,vertices[0].y), (vertices[1].x,vertices[1].y), (255,0,0), 2)
-        cv2.line(img, (vertices[1].x,vertices[1].y), (vertices[2].x,vertices[2].y), (255,0,0), 2)
-        cv2.line(img, (vertices[2].x,vertices[2].y), (vertices[3].x,vertices[3].y), (255,0,0), 2)
-        cv2.line(img, (vertices[3].x,vertices[3].y), (vertices[0].x,vertices[0].y), (255,0,0), 2)
+        cv2.line(img, (vertices[0].x,vertices[0].y), (vertices[1].x,vertices[1].y), color, 2)
+        cv2.line(img, (vertices[1].x,vertices[1].y), (vertices[2].x,vertices[2].y), color, 2)
+        cv2.line(img, (vertices[2].x,vertices[2].y), (vertices[3].x,vertices[3].y), color, 2)
+        cv2.line(img, (vertices[3].x,vertices[3].y), (vertices[0].x,vertices[0].y), color, 2)
     
     # cv2.imwrite('savedImage.jpg', img)
 
