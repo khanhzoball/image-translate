@@ -52,12 +52,25 @@ def convert_to_image(data):
 
     return content
 
-def translate(texts):
-    for text in texts:
-        0
+def translate(text, language):
+    description = text.description
+
+    response = post("https://openapi.naver.com/v1/papago/n2mt",
+        headers = {
+            "X-Naver-Client-Id": os.getenv("NAVER_CLIENT_ID"),
+            "X-Naver-Client-Secret": os.getenv("NAVER_CLIENT_SECRET")
+            },
+        data={
+            "source": language,
+            "target": "en",
+            "text": description
+        }).json()
+
+    print(response["message"])
+    return(response["message"]["result"]["translatedText"])
 
 def detect_language(texts):
-    texts_lang = {}
+    # texts_lang = {}
 
     # for text in texts:
     #     description = text.description
@@ -72,19 +85,21 @@ def detect_language(texts):
     #     print(response)
     #     texts_lang[text.description] = response['langCode']
 
-    detectlanguage.configuration.api_key = "478af81c74a80fd8caae1d074019e7c8"
+    # detectlanguage.configuration.api_key = "478af81c74a80fd8caae1d074019e7c8"
 
-    for text in texts:
-        description = text.description
-        response = detectlanguage.detect(description)
-        if len(response) > 0:
-            texts_lang[description] = response[0]['language']
-        else:
-            texts_lang[description] = "unk"
-        print(texts_lang[description])
-        sys.stdout.flush()
+    # for text in texts:
+    #     description = text.description
+    #     response = detectlanguage.detect(description)
+    #     if len(response) > 0:
+    #         texts_lang[description] = response[0]['language']
+    #     else:
+    #         texts_lang[description] = "unk"
+    #     print(texts_lang[description])
+    #     sys.stdout.flush()
     
-    return texts_lang
+    # return texts_lang
+
+    return 0
 
 def detect_text(content):
     os.environ["GOOGLE_APPLICATION_CREDENTIALS"]="google-credentials.json"
@@ -114,11 +129,14 @@ def detect_text(content):
         image_context={"language_hints": ["ko"]})
     
     texts = response.text_annotations
+    language = texts[0].locale
 
     print("FINISHED GOOGLE VISION DETECTION")
     sys.stdout.flush()
 
     # texts_lang = detect_language(texts)
+
+    translation = translate(texts[0], language)
 
     nparr = np.frombuffer(content, np.uint8)
     img = cv2.imdecode(nparr, flags=cv2.IMREAD_COLOR)
@@ -147,7 +165,16 @@ def detect_text(content):
     
     data_uri = "data:image/jpg;base64," + b64encode(encoded_bytes).decode("utf-8")
 
-    return data_uri
+    original_text = texts[0].description.split("\n")
+    translated_text = translation.split("\n")
+
+    result = {
+        "data_uri": data_uri,
+        "original_text": original_text,
+        "translated_text": translated_text
+    }
+
+    return result
 
 
 ###############################################################################
@@ -164,11 +191,11 @@ def image_translate():
     print("FINISHED CONVERTING DATA URI TO IMAGE")
     sys.stdout.flush()
 
-    data_uri = detect_text(content)
+    result = detect_text(content)
     print("FINISHED CREATING IMG")
     sys.stdout.flush()
 
-    return jsonify({"new_img": data_uri})
+    return jsonify(result)
 
 if __name__ == "__main__":
     app.run(debug=True)
