@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from "react";
 
 const Home = () => {
-    
+    const [original, setOriginal] = useState([])
+    const [translation, setTranslation] = useState([])
+
     const LOG_IMG = (image) => {
         const file = image[0]
 
@@ -15,19 +17,25 @@ const Home = () => {
                     'data_uri': data_uri,
                 }),
             })
-            .then(res=>(res.json()))
+            .then(res => res.json())
             .then(resJson => {
-                let canvas = document.getElementById("result-image");
-                let img = new Image()
-
                 console.log(resJson)
-
-                document.getElementById("result-image").src = resJson["new_img"];
+                document.getElementById("result-image").src = resJson["data_uri"];
+                setOriginal(resJson["original_text"])
+                setTranslation(resJson["translated_text"])
             })
         }
         reader.readAsDataURL(file);
     }
 
+    const TEXT_MAPPER = (props) => {
+        console.log(props.text)
+        return (
+            <div className={props.lang_map}>
+                {props.text}
+            </div>
+        )
+    }
 
     return (
         <div>
@@ -45,6 +53,30 @@ const Home = () => {
                     <input id="img-upload" type="file" accept="image/*" onChange={(e) => {
                         LOG_IMG(e.target.files)
                     }}/>
+                </div>
+                <div className="text-container">
+                    <div className="original-container">
+                        <div className="original-text">
+                            Original
+                        </div>
+                        {
+                            original.map( (text) => 
+                            {
+                                return <TEXT_MAPPER text={text} lang_map={"original-text"}/>
+                            })
+                        }
+                    </div>
+                    <div className="translation-container">
+                        <div className="translated-text">
+                            Translation
+                        </div>
+                        {
+                            translation.map( (text) => 
+                            {
+                                return <TEXT_MAPPER text={text} lang_map={"translated-text"}/>
+                            })
+                        }
+                    </div>
                 </div>
             </div>
         </div>

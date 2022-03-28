@@ -52,3 +52,41 @@ input[type="file"] {
     color: #000c18;
     cursor: pointer;
 }
+
+.text-container {
+    border-radius: 25px;
+    width: 600px;
+    display: flex;
+    flex-direction: row;
+    margin-top: 2.5rem;
+}
+
+.original-container {
+    width: 300px;
+}
+
+.translation-container {
+    width: 300px;
+}
+
+.original-text {
+    font-size: 2em;
+    font-weight: 700;
+    color: lightblue;
+    margin-top: .5em;
+    margin-bottom: .5em;
+    margin-left: .5em;
+    margin-right: .5em;
+    text-align: center;
+}
+
+.translated-text {
+    font-size: 2em;
+    font-weight: 700;
+    color: white;
+    margin-top: .5em;
+    margin-bottom: .5em;
+    margin-left: .5em;
+    margin-right: .5em;
+    text-align: center;
+}
