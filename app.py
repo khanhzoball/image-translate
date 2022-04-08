@@ -126,7 +126,7 @@ def detect_text(content):
 
     response = client.text_detection(
         image=image,
-        image_context={"language_hints": ["ko"]})
+    )
     
     texts = response.text_annotations
     language = texts[0].locale
@@ -134,9 +134,15 @@ def detect_text(content):
     print("FINISHED GOOGLE VISION DETECTION")
     sys.stdout.flush()
 
+    
+    translation = ""
     # texts_lang = detect_language(texts)
-
-    translation = translate(texts[0], language)
+    if language == "en":
+        translation = texts[0].description
+    elif language in lang_colors:
+        translation = translate(texts[0], language)
+    else:
+        translation = "Language not supported"
 
     nparr = np.frombuffer(content, np.uint8)
     img = cv2.imdecode(nparr, flags=cv2.IMREAD_COLOR)
